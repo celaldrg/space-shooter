@@ -1,0 +1,11 @@
+{
+  "name": "space-shooter",
+  "version": "1.0.0",
+  "description": "Original vertical space shooter for the browser: vanilla JS, canvas art, 10 scripted waves and a three-phase boss on a deterministic fixed-step simulation.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT"
+}

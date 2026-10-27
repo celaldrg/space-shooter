@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Space Shooter</title>
+  <meta name="description" content="An original vertical arcade shooter for the browser: ten scripted waves, a three-phase boss, power-ups and a combo multiplier. Plays with keyboard or touch.">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0f172a">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Space Shooter">
+  <meta property="og:description" content="An original vertical arcade shooter for the browser: ten scripted waves, a three-phase boss, power-ups and a combo multiplier.">
+  <meta property="og:url" content="https://celaldrg.github.io/space-shooter/">
+  <meta property="og:image" content="https://celaldrg.github.io/space-shooter/docs/screenshot.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f172a'/%3E%3Cpath d='M16 4l3 7 1.5 5.5L28 23.5l-1 3.5-7-2.5-1.5 3h-5L12 24.5 5 27l-1-3.5 7.5-7L13 11z' fill='%23818cf8'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="src/main.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path d="M16 4l3 7 1.5 5.5L28 23.5l-1 3.5-7-2.5-1.5 3h-5L12 24.5 5 27l-1-3.5 7.5-7L13 11z"/>
+      </svg>
+      <span class="brand-name" data-i18n="app.title">Space Shooter</span>
+    </h1>
+    <div class="topbar-actions">
+      <button type="button" class="button" id="new-game" data-i18n="action.newGame">New game</button>
+      <button type="button" class="button button-square" id="lang-toggle" data-i18n="lang.button" data-i18n-label="lang.label" aria-label="TR – switch to Turkish">TR</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <div class="layout-inner">
+      <aside class="panel">
+        <section class="panel-card">
+          <h2 data-i18n="panel.controls">Controls</h2>
+          <dl class="key-list">
+            <div><dt><kbd data-i18n="keys.move">Arrows / WASD</kbd></dt><dd data-i18n="help.move">Move</dd></div>
+            <div><dt><kbd data-i18n="keys.fire">Space</kbd></dt><dd data-i18n="help.fire">Fire</dd></div>
+            <div><dt><kbd data-i18n="keys.autoFire">F</kbd></dt><dd data-i18n="help.autoFire">Auto-fire on/off</dd></div>
+            <div><dt><kbd data-i18n="keys.pause">P / Esc</kbd></dt><dd data-i18n="help.pause">Pause</dd></div>
+            <div><dt><kbd data-i18n="keys.sound">M</kbd></dt><dd data-i18n="help.sound">Sound on/off</dd></div>
+            <div><dt><kbd data-i18n="keys.start">Enter</kbd></dt><dd data-i18n="help.start">Start / play again</dd></div>
+          </dl>
+          <p class="panel-note" data-i18n="help.touch">Touch: drag anywhere to fly. The ship copies your finger from a distance and fires on its own.</p>
+        </section>
+      </aside>
+
+      <div class="play">
+        <div class="stage" id="stage" tabindex="0" role="application" data-i18n-label="stage.label" aria-label="Game field" data-screen="title">
+          <canvas id="game-canvas" aria-hidden="true"></canvas>
+
+          <div class="hud">
+            <div class="hud-block hud-start">
+              <span class="hud-label" data-i18n="label.score">Score</span>
+              <span class="hud-score" id="hud-score"></span>
+              <span class="hud-best" id="hud-best"></span>
+            </div>
+            <div class="hud-block hud-center">
+              <span class="hud-multiplier" id="hud-multiplier" role="img"></span>
+              <span class="hud-weapon" id="hud-weapon" role="img" hidden>
+                <span id="hud-weapon-name"></span>
+                <span class="pips" id="hud-weapon-level"></span>
+              </span>
+            </div>
+            <div class="hud-block hud-end">
+              <span class="hud-wave" id="hud-wave"></span>
+              <span class="lives" id="hud-lives" role="img"></span>
+              <span class="pips pips-shield" id="hud-shield" role="img" hidden></span>
+            </div>
+          </div>
+
+          <div class="bossbar" id="bossbar" hidden>
+            <div class="bossbar-head"><span data-i18n="hud.boss">Boss</span><span id="bossbar-phase"></span></div>
+            <div class="bossbar-track" id="bossbar-track"><span class="bossbar-fill" id="bossbar-fill"></span></div>
+          </div>
+
+          <p class="banner" id="banner" aria-live="polite"></p>
+
+          <section class="screen" id="screen-title" aria-labelledby="title-heading">
+            <div class="card">
+              <svg class="card-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                <path d="M16 4l3 7 1.5 5.5L28 23.5l-1 3.5-7-2.5-1.5 3h-5L12 24.5 5 27l-1-3.5 7.5-7L13 11z"/>
+              </svg>
+              <h2 id="title-heading" data-i18n="app.title">Space Shooter</h2>
+              <p class="card-text" data-i18n="app.tagline">Ten scripted waves, a three-phase boss and a combo multiplier that rewards nerve.</p>
+              <button type="button" class="button button-primary button-large" id="start-button" data-i18n="title.start">Start</button>
+              <p class="card-best" id="title-best" hidden></p>
+              <ul class="hint-list">
+                <li><kbd data-i18n="keys.move">Arrows / WASD</kbd><span data-i18n="help.move">Move</span></li>
+                <li><kbd data-i18n="keys.fire">Space</kbd><span data-i18n="help.fire">Fire</span></li>
+                <li><kbd data-i18n="keys.pause">P / Esc</kbd><span data-i18n="help.pause">Pause</span></li>
+              </ul>
+              <p class="card-hint-touch" data-i18n="help.touch">Touch: drag anywhere to fly. The ship copies your finger from a distance and fires on its own.</p>
+            </div>
+          </section>
+
+          <section class="screen" id="screen-pause" aria-labelledby="pause-heading" hidden>
+            <div class="card">
+              <h2 id="pause-heading" data-i18n="pause.title">Paused</h2>
+              <p class="card-text" data-i18n="pause.hint">Press P or Esc to resume.</p>
+              <button type="button" class="button button-primary button-large" id="resume-button" data-i18n="control.resume">Resume</button>
+            </div>
+          </section>
+
+          <section class="screen" id="screen-end" aria-labelledby="end-title" hidden>
+            <div class="card">
+              <h2 id="end-title"></h2>
+              <p class="card-text" id="end-text"></p>
+              <p class="end-score"><span class="end-label" data-i18n="label.score">Score</span><strong id="end-score"></strong></p>
+              <p class="badge" id="end-new-best" data-i18n="end.newBest" hidden>New best!</p>
+              <p class="card-meta" id="end-stats"></p>
+              <p class="card-meta"><span data-i18n="label.best">Best</span> <span id="end-best"></span></p>
+              <button type="button" class="button button-primary button-large" id="again-button" data-i18n="end.again">Play again</button>
+            </div>
+          </section>
+        </div>
+
+        <div class="controls" role="toolbar" data-i18n-label="controls.label" aria-label="Game controls">
+          <button type="button" class="button control" id="pause-button" data-i18n-title="control.pauseHint" title="Pause or resume (P)" disabled>
+            <svg class="icon icon-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+            <svg class="icon icon-play" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg>
+            <span id="pause-label"></span>
+          </button>
+          <button type="button" class="button control" id="autofire-button" aria-pressed="false" data-i18n-title="control.autoFireHint" title="Keep firing without holding Space (F)">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+            <span data-i18n="control.autoFire">Auto-fire</span>
+          </button>
+          <button type="button" class="button control" id="sound-button" aria-pressed="true" data-i18n-title="control.soundHint" title="Turn sound effects on or off (M)">
+            <svg class="icon icon-sound-on" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 9h4l5-4v14l-5-4H3z"/><path class="icon-stroke" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>
+            <svg class="icon icon-sound-off" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 9h4l5-4v14l-5-4H3z"/><path class="icon-stroke" d="M15.5 9.5l5 5m0-5-5 5"/></svg>
+            <span data-i18n="control.sound">Sound</span>
+          </button>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <section class="panel-card">
+          <h2 data-i18n="panel.powerUps">Power-ups</h2>
+          <ul class="power-list">
+            <li class="power-spread">
+              <svg class="power-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="power-badge" d="M20.7 17 12 22l-8.7-5V7L12 2l8.7 5z"/><path class="icon-stroke" d="M12 16.5 7.5 7.5M12 16.5V7.5M12 16.5l4.5-9"/></svg>
+              <div><strong data-i18n="weapon.spread">Spread</strong><p data-i18n="panel.spread">A fan of shots that widens with every level.</p></div>
+            </li>
+            <li class="power-rapid">
+              <svg class="power-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="power-badge" d="M20.7 17 12 22l-8.7-5V7L12 2l8.7 5z"/><path class="icon-stroke" d="M8 12l4-4 4 4M8 16.5l4-4 4 4"/></svg>
+              <div><strong data-i18n="weapon.rapid">Rapid</strong><p data-i18n="panel.rapid">Fast single, twin and triple streams.</p></div>
+            </li>
+            <li class="power-beam">
+              <svg class="power-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="power-badge" d="M20.7 17 12 22l-8.7-5V7L12 2l8.7 5z"/><path d="M10.4 6h3.2v12h-3.2z"/></svg>
+              <div><strong data-i18n="weapon.beam">Beam</strong><p data-i18n="panel.beam">A continuous ray that burns the nearest target.</p></div>
+            </li>
+            <li class="power-shield">
+              <svg class="power-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="power-badge" d="M20.7 17 12 22l-8.7-5V7L12 2l8.7 5z"/><path class="icon-stroke" d="M12 6.5l4.8 2-.8 5c-1.4 2.8-2.4 4.2-4 5.5-1.6-1.3-2.6-2.7-4-5.5l-.8-5z"/></svg>
+              <div><strong data-i18n="item.shield">Shield</strong><p data-i18n="panel.shield">Absorbs one hit; stacks up to three.</p></div>
+            </li>
+          </ul>
+        </section>
+        <section class="panel-card">
+          <h2 data-i18n="panel.scoring">Scoring</h2>
+          <p class="panel-text" data-i18n="panel.combo">Kills less than two seconds apart build the multiplier, up to ×8. Getting hit resets it.</p>
+          <p class="panel-text" data-i18n="panel.lives">Losing a ship costs one weapon level.</p>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <a class="footer-link" href="https://github.com/celaldrg/space-shooter"><span data-i18n="footer.license">MIT</span><span aria-hidden="true">·</span><span data-i18n="footer.source">Source on GitHub</span></a>
+  </footer>
+</body>
+</html>
